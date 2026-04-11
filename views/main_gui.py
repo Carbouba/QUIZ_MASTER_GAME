@@ -69,8 +69,8 @@ def main_view():
         app,
         fg_color=COLORS["surface"],
         width=500,
-        height=60,
-        corner_radius=0,
+        height=100,
+        corner_radius=DIMENSIONS["border"],
     )
     title_frame.pack(pady=(0, 5))
     title_frame.pack_propagate(False)
@@ -89,7 +89,7 @@ def main_view():
         fg_color=COLORS["bg"],
         width=500,
         height=700,
-        corner_radius=0,
+        corner_radius=DIMENSIONS["border"],
     )
     main_frame.pack()
     main_frame.pack_propagate(False)
@@ -111,7 +111,7 @@ def main_view():
             fg_color=COLORS["bg"],
             width=300,
             height=280,
-            corner_radius=0,
+            corner_radius=DIMENSIONS["border"],
         )
         top_panel.pack(pady=(10, 5))
         top_panel.pack_propagate(False)
@@ -154,7 +154,7 @@ def main_view():
             fg_color=COLORS["surface"],
             border_width=1,
             border_color=COLORS["primary_dim"],
-            corner_radius=8,
+            corner_radius=DIMENSIONS["border"],
             hover=False,
             width=100,
             height=50,
@@ -168,7 +168,7 @@ def main_view():
             fg_color=COLORS["bg"],
             width=300,
             height=500,
-            corner_radius=0,
+            corner_radius=DIMENSIONS["border"],
         )
         center_panel.pack(pady=(10, 5))
         center_panel.pack_propagate(False)
@@ -277,7 +277,7 @@ def main_view():
             fg_color=COLORS["bg"],
             width=400,
             height=100,
-            corner_radius=0,
+            corner_radius=DIMENSIONS["border"],
         )
         top_frame.pack(pady=(20, 10))
         top_frame.pack_propagate(False)
@@ -338,7 +338,7 @@ def main_view():
         remaining_frame = ctk.CTkFrame(
             main_frame,
             fg_color=COLORS["surface"],
-            width=400,
+            width=300,
             height=70,
             corner_radius=DIMENSIONS["border"],
             border_width=1,
@@ -349,25 +349,25 @@ def main_view():
         
         remaining_label = ctk.CTkLabel(
             remaining_frame,
-            text="Questions \nrestantes",
+            text=f"Questions restantes :    {remain_questions}/{all_questions}",
             text_color=COLORS["text_muted"],
             font=FONTS["question"],
             justify="left",
         )
-        remaining_label.grid(column=0, row=0, pady=(10, 5), padx=20, ipadx=20)
+        remaining_label.grid(column=0, row=0, pady=(10, 5), padx=(20, 10))
 
         progress_bar = ctk.CTkProgressBar(
             master=remaining_frame,
             width=100,
             height=10,
-            corner_radius=10,
+            corner_radius=DIMENSIONS["border"],
             border_width=1,
             border_color=COLORS["border"],
             progress_color=COLORS["primary"],
             orientation="horizontal",
         )
         progress_bar.set(remain_questions / all_questions)
-        progress_bar.grid(column=1, row=0, pady=(10, 5), padx=20, ipadx=20, sticky="ew")
+        progress_bar.grid(column=1, row=0, pady=(10, 5), padx=(0, 20), sticky="ew")
 
         # ── Carte de la question ───────────────────────────────────────────────
         question_frame = ctk.CTkFrame(
@@ -382,37 +382,22 @@ def main_view():
         question_frame.pack(pady=(10, 5))
         question_frame.pack_propagate(False)
 
-        questions_count_badge = ctk.CTkButton(
-            question_frame,
-            text=f"Questions restantes : {remain_questions}/{all_questions}",
-            text_color=COLORS["white"],
-            font=FONTS["badge"],
-            fg_color=COLORS["primary_dim"],
-            corner_radius=6,
-            hover=False,
-            width=50,
-            height=22,
-        )
-        questions_count_badge.pack_propagate(False)
-        questions_count_badge.pack(pady=(10, 5), anchor="center", ipadx=2)
-
         question_lbl = ctk.CTkLabel(
             question_frame,
             text=current_question,
             text_color=COLORS["text"],
             font=FONTS["question"],
+
         )
-        question_lbl.pack(pady=10, anchor="center")
+        question_lbl.pack(pady=10, anchor="center", expand=True)
 
         # ── Zone de saisie et bouton de validation ─────────────────────────────
         bottom_frame = ctk.CTkFrame(
             main_frame,
-            fg_color=COLORS["surface"],
+            fg_color=COLORS["bg"],
             width=400,
             height=300,
             corner_radius=DIMENSIONS["border"],
-            border_width=1,
-            border_color=COLORS["border"],
         )
         bottom_frame.pack(pady=(10, 5))
         bottom_frame.pack_propagate(False)
@@ -427,13 +412,16 @@ def main_view():
 
         user_input = ctk.CTkEntry(
             bottom_frame,
-            fg_color=COLORS["surface3"],
+            font=FONTS["placeholder"],
+            fg_color=COLORS["surface"],
             text_color=COLORS["text"],
             border_width=1,
             border_color=COLORS["border"],
             width=400,
-            height=40,
-            corner_radius=8,
+            height=55,
+            corner_radius=DIMENSIONS["border"],
+            placeholder_text="Écris ta réponse ici...",
+            placeholder_text_color=COLORS["text_muted"],
         )
         user_input.pack(pady=5)
 
@@ -480,6 +468,7 @@ def main_view():
 
             # ── Mise à jour de l'interface après chaque réponse ───────────────
             remain_questions -= 1
+            remaining_label.configure(text=f"Questions restantes :    {remain_questions}/{all_questions}")
             progress_bar.set(remain_questions / all_questions)  # ← recalcul à chaque réponse
             user_input.delete(0, END)
 
@@ -499,14 +488,12 @@ def main_view():
                     questions_count_badge.configure(
                         fg_color=COLORS["danger_light"]
                     )
-                questions_count_badge.configure(
-                    text=f"Question(s) restante(s) : {remain_questions}/{all_questions}"
-                )
+
             else:
                 # ── Fin du quiz : enregistrement du record si battu ────────────
                 if user_score > last_record:
                     insert_record(user_score)
-                record_badge.configure(text=f"🏆 Record à battre : {last_record} pts")
+                record_badge.configure(text=f"🏆 Record à battre : {user_score} pts")
                 # Retour au menu principal après un court délai
                 app.after(1500, main_menu)
 
@@ -514,15 +501,16 @@ def main_view():
             bottom_frame,
             text="Envoyer",
             text_color=COLORS["white"],
-            font=FONTS["subtitle"],
+            font=FONTS["title"],
             fg_color=COLORS["primary"],
             hover_color=COLORS["primary_hover"],
-            width=60,
-            height=30,
+            width=400,
+            height=50,
             corner_radius=DIMENSIONS["border"],
+            cursor="hand2",
             command=lambda: on_submit(user_input.get()),
         )
-        submit_btn.pack(anchor="w")
+        submit_btn.pack(anchor="w", pady=10)
 
     # ── Lancement de l'application ─────────────────────────────────────────────
     main_menu()
