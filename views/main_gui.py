@@ -40,22 +40,24 @@ def main_view():
     app.title("QUIZ MASTER GAME")
     app.geometry("500x700")
     app.resizable(False, False)
-    app.configure(fg_color=COLORS["surface2"])
+    app.configure(fg_color=COLORS["bg"])
 
     # ── Main Title frame ───────────────────────────────────────────────title
-    title_fram = ctk.CTkFrame(app, fg_color=COLORS["black"], 
-                              width=500, height=60, corner_radius=0)
+    title_fram = ctk.CTkFrame(app, fg_color=COLORS["surface"],
+                          width=500, height=60, corner_radius=0)
     title_fram.pack(pady=(0, 5))
     title_fram.pack_propagate(False)
-    title_lbl = ctk.CTkLabel(title_fram, 
-                            text="🎮 QUIZ MASTER GAME 🎮", text_color=COLORS["white"], 
-                            font=FONTS["title"])
+    title_lbl = ctk.CTkLabel(title_fram,
+                         text="🎮 QUIZ MASTER GAME 🎮",
+                         text_color=COLORS["text"],
+                         font=FONTS["title"])
     title_lbl.pack(expand=True)
     
-    main_fram = ctk.CTkFrame(app, fg_color=COLORS["surface2"], 
-                            width=500, height=700, corner_radius=0)
+    main_fram = ctk.CTkFrame(app, fg_color=COLORS["bg"],
+                         width=500, height=700, corner_radius=0)
     main_fram.pack()
     main_fram.pack_propagate(False)
+
         # Nettoyage d'écran
     def nettoyage():
 
@@ -71,30 +73,47 @@ def main_view():
         nettoyage()
 
         # ── SubTitle frame ───────────────────────────────────────────────
-        second_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["surface2"], 
-                                    width=300, height=200, corner_radius=0)
+        second_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["bg"],
+                             width=300, height=280, corner_radius=0)
         second_frame.pack(pady=(10, 5))
         second_frame.pack_propagate(False)
 
-        wel_lbl = ctk.CTkLabel(second_frame, 
-                                text="BIENVENUE", text_color=COLORS["black"], font=FONTS["h1"])
+        game_icon = ctk.CTkButton(second_frame,
+                           text=f"🎮",
+                           #text_color=COLORS["white"],
+                           font=FONTS["h1"],
+                           fg_color=COLORS["primary_dim"],
+                           border_width=1,
+                           border_color=COLORS["border"],
+                           corner_radius=DIMENSIONS["border"], hover=False,
+                           width=70, height=70)
+        game_icon.pack(pady=(20,15))
+
+        wel_lbl = ctk.CTkLabel(second_frame,
+                        text="BIENVENUE",
+                        text_color=COLORS["text"], font=FONTS["h1"])
         wel_lbl.pack(pady=5) 
 
-        sub_lbl = ctk.CTkLabel(second_frame, 
-                                text="Repondez aux questions\net battez le record", 
-                                text_color=COLORS["black"], font=FONTS["body"])
+        sub_lbl = ctk.CTkLabel(second_frame,
+                        text="Repondez aux questions et battez le \nrecord",
+                        text_color=COLORS["text_muted"], font=("Roboto", 18))
         sub_lbl.pack(pady=(0,5))   
 
-        rec_badge = ctk.CTkButton(second_frame, 
-                                text=f"📜 Record actuel à battre : {last_record}", text_color=COLORS["white"], 
-                                font=FONTS["subtitle"], fg_color=COLORS["primary"],
-                                corner_radius=5, hover=False,
-                                width=70, height=30)
-        rec_badge.pack(pady=(10,5)) 
+        rec_badge = ctk.CTkButton(second_frame,
+                           text=f"🏆 Record à battre : {last_record} pts",
+                           text_color=COLORS["white"],
+                           font=("Roboto", 18),
+                           fg_color=COLORS["surface"],
+                           border_width=1,
+                           border_color=COLORS["primary_dim"],
+                           corner_radius=8, hover=False,
+                           width=100, height=50)
+        rec_badge.pack_propagate(False)
+        rec_badge.pack(pady=(10,5), ipadx=10) 
 
         # ── Center frame ───────────────────────────────────────────────
-        center_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["surface2"], 
-                                    width=300, height=500, corner_radius=0)
+        center_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["bg"],
+                             width=300, height=500, corner_radius=0)
         center_frame.pack(pady=(10, 5))
         center_frame.pack_propagate(False)
 
@@ -103,8 +122,9 @@ def main_view():
                                     image=ctk.CTkImage(Image.open(os.path.join(IMG_DIR, "play.png"))),
                                     compound="left",
                                     fg_color=COLORS["primary"], hover_color=COLORS["primary_hover"],
-                                    width=300, height=50,
+                                    width=350, height=70,
                                     corner_radius=DIMENSIONS["border"],
+                                    cursor="hand2",
                                     command=game_ui
                                     )
         start_btn.pack(pady=10)
@@ -112,27 +132,33 @@ def main_view():
         def refresh_record():
             insert_record(0)
             last_record = get_record()
-            rec_badge.configure(text=f"📜 Record actuel à battre : {last_record}")
+            rec_badge.configure(text=f"🏆 Record à battre : {last_record} pts")
 
-        reco_init_btn = ctk.CTkButton(center_frame, text="Reinitialiser le record", text_color=COLORS["white"],
+        reco_init_btn = ctk.CTkButton(center_frame, text="Reinitialiser le record", text_color=COLORS["warning"],
                                         font=FONTS["title"],
                                         image=ctk.CTkImage(Image.open(os.path.join(IMG_DIR, "sync.png"))),
                                         compound="left",
-                                        fg_color=COLORS["warning"], hover_color=COLORS["black"],
-                                        width=300, height=50,
+                                        fg_color=COLORS["surface"], hover=False,
+                                        width=350, height=70,
                                         corner_radius=DIMENSIONS["border"],
+                                        border_width=1,
+                                        border_color=COLORS["warning_hover"],
+                                        cursor="hand2",
                                         command=refresh_record
                                         )
         reco_init_btn.pack(pady=10)
 
-        quit_init_btn = ctk.CTkButton(center_frame, text="Quitter", text_color=COLORS["white"],
+        quit_init_btn = ctk.CTkButton(center_frame, text="Quitter", text_color=COLORS["danger"],
                                     font=FONTS["title"],
                                     image=ctk.CTkImage(Image.open(os.path.join(IMG_DIR, "quit.png"))),
                                     compound="left",
-                                    fg_color=COLORS["danger"], hover_color=COLORS["danger_hover"],
-                                    width=300, height=50,
+                                    fg_color=COLORS["surface"], hover=False,
+                                    width=350, height=70,
                                     corner_radius=DIMENSIONS["border"],
-                                    command=app.quit
+                                    border_width=1,
+                                    border_color=COLORS["danger_hover"],
+                                    cursor="hand2",
+                                    command=app.quit    
                                     )
         quit_init_btn.pack(pady=10)
         
@@ -168,70 +194,128 @@ def main_view():
                 if response.get() == "Oui":
                     main_menu() # Retour à l'écran de d'acceuil
 
-        back_menu_btn = ctk.CTkButton(main_fram, text="Retour", text_color=COLORS["white"],
-                                    font=FONTS["label"],
-                                    image=ctk.CTkImage(Image.open(os.path.join(IMG_DIR, "back.png")), size=(6,7)),
-                                    compound="left",
-                                    fg_color=COLORS["danger"], hover_color=COLORS["danger_hover"],
-                                    width=50, height=20,
-                                    corner_radius=DIMENSIONS["border"],
-                                    command=confirm_quit
-                                    )
-        back_menu_btn.pack(pady=(0, 10), padx=5, anchor="w")
-
         # ── Top frame ───────────────────────────────────────────────
-        top_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["surface2"], 
-                                  width=400, height=100, corner_radius=0)
-        top_frame.pack(pady=(10, 5))
+        top_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["bg"],
+                          width=400, height=100, corner_radius=0)
+        top_frame.pack(pady=(20, 10))
         top_frame.pack_propagate(False)
 
-        rec_badge = ctk.CTkButton(top_frame, 
-                                text=f"Record actuel à battre : {last_record}", text_color=COLORS["white"], 
-                                font=FONTS["subtitle"], fg_color=COLORS["primary"],
-                                corner_radius=5, hover=False,
-                                width=70, height=30)
-        rec_badge.pack_propagate(False)
-        rec_badge.pack(pady=(10,5), anchor="w", ipadx=2)
+        back_menu_btn = ctk.CTkButton(top_frame, text="Retour",
+                                    image=ctk.CTkImage(Image.open(os.path.join(IMG_DIR, "back.png")), size=(6,7)),
+                                    text_color=COLORS["danger"],
+                                font=("Roboto", 15),
+                                fg_color=COLORS["surface"],
+                                corner_radius=DIMENSIONS["border"],
+                                border_width=1,
+                                border_color=COLORS["danger_hover"],
+                                hover=False,
+                                cursor="hand2",
+                                width=90, height=30,
+                                command=confirm_quit
+                                    )
+        back_menu_btn.grid(row=0, column=0, padx=10)
 
-        cur_rec_badge = ctk.CTkButton(top_frame, 
-                                text=f"Ton score actuel est : {USER_SCORE}", text_color=COLORS["white"], 
-                                font=FONTS["subtitle"], fg_color=COLORS["black"],
-                                corner_radius=5, hover=False,
-                                width=70, height=30)
-        cur_rec_badge.pack_propagate(False)
-        cur_rec_badge.pack(pady=(0,5), anchor="w", ipadx=2)
+        rec_badge = ctk.CTkButton(top_frame,
+                           text=f"Record à battre : {last_record} pt",
+                           text_color=COLORS["primary_hover"],
+                                font=("Roboto", 15),
+                                fg_color=COLORS["surface"],
+                                corner_radius=DIMENSIONS["border"],
+                                border_width=1,
+                                border_color=COLORS["primary_hover"],
+                                hover=False,
+                           width=180, height=30)
+        rec_badge.grid_propagate(False)
+        rec_badge.grid(row=0, column=1, padx=10)
+
+        cur_rec_badge = ctk.CTkButton(top_frame,
+                                text=f"Score : {USER_SCORE}",
+                                text_color=COLORS["success_hover"],
+                                font=("Roboto", 15),
+                                fg_color=COLORS["surface"],
+                                corner_radius=DIMENSIONS["border"],
+                                border_width=1,
+                                border_color=COLORS["success_hover"],
+                                hover=False,
+                                width=95, height=30)
+        cur_rec_badge.grid_propagate(False)
+        cur_rec_badge.grid(row=0, column=2, padx=10)
+
+        # ── remaing questions frame ───────────────────────────────────────────────
+        remai_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["surface"],
+                             width=400, height=70,
+                             corner_radius=DIMENSIONS["border"],
+                             border_width=1,
+                             border_color=COLORS["border"])
+        remai_frame.pack(pady=(10, 5))
+        remai_frame.pack_propagate(False)
+        
+
+        remaiinig_badge = ctk.CTkLabel(remai_frame,
+                                text=f"Questions \nrestantes",
+                                text_color=COLORS["text_muted"],
+                                font=FONTS["question"],
+                                justify="left")
+        remaiinig_badge.grid(column=0, row=0, pady=(10,5), ipadx=2)
+
+        progressbar = ctk.CTkProgressBar(master=remai_frame,
+                                        width=200,
+                                        height=10,
+                                        corner_radius=10,
+                                        border_width=1,
+                                        border_color=COLORS["border"],
+                                        progress_color=COLORS["primary"],
+                                        orientation="horizontal",
+                                        )
+        progressbar.set(remain_questions/all_questions)
+        progressbar.grid(column=1, row=0, pady=(10,5), ipadx=2)
+        
 
         # ── Center frame ───────────────────────────────────────────────
-        center_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["white"], 
-                                    width=400, height=150, corner_radius=DIMENSIONS["border"])
+        center_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["surface3"],
+                             width=400, height=150,
+                             corner_radius=DIMENSIONS["border"],
+                             border_width=1,
+                             border_color=COLORS["border"])
         center_frame.pack(pady=(10, 5))
         center_frame.pack_propagate(False)
 
-        remaiinig_badge = ctk.CTkButton(center_frame, 
-                                text=f"Question(s) restante(s) : {remain_questions}/{all_questions}", text_color=COLORS["black"], 
-                                font=FONTS["label"], fg_color=COLORS["primary_dim"],
-                                corner_radius=5, hover=False,
-                                width=50, height=20)
+        remaiinig_badge = ctk.CTkButton(center_frame,
+                                 text=f"Questions restantes : {remain_questions}/{all_questions}",
+                                 text_color=COLORS["white"],
+                                 font=FONTS["badge"],
+                                 fg_color=COLORS["primary_dim"],
+                                 corner_radius=6, hover=False,
+                                 width=50, height=22)
         remaiinig_badge.pack_propagate(False)
         remaiinig_badge.pack(pady=(10,5), anchor="center", ipadx=2)
 
         question_lbl = ctk.CTkLabel(center_frame, text=current_question,
-                                    text_color=COLORS["black"], font=FONTS["question"])
+                             text_color=COLORS["text"],
+                             font=FONTS["question"])
         question_lbl.pack(pady=10, anchor="center")
 
         # ── Buttom frame ───────────────────────────────────────────────
-        bottom_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["surface2"], 
-                                    width=400, height=300, corner_radius=DIMENSIONS["border"])
+        bottom_frame = ctk.CTkFrame(main_fram, fg_color=COLORS["surface"],
+                             width=400, height=300,
+                             corner_radius=DIMENSIONS["border"],
+                             border_width=1,
+                             border_color=COLORS["border"])
         bottom_frame.pack(pady=(10, 5))
         bottom_frame.pack_propagate(False)
 
-        response_lbl = ctk.CTkLabel(bottom_frame, text="Ta reponse :",
-                                    text_color=COLORS["black"], font=FONTS["placeholder"])
+        response_lbl = ctk.CTkLabel(bottom_frame, text="Ta réponse :",
+                             text_color=COLORS["text_muted"],
+                             font=FONTS["placeholder"])
         response_lbl.pack(pady=(5, 0), anchor="w")
 
-        user_in = ctk.CTkEntry(bottom_frame, fg_color=COLORS["white"], text_color=COLORS["black"],
-                                border_width=1, border_color=COLORS["black"],
-                                width=400, height=40)
+        user_in = ctk.CTkEntry(bottom_frame,
+                        fg_color=COLORS["surface3"],
+                        text_color=COLORS["text"],
+                        border_width=1,
+                        border_color=COLORS["border"],
+                        width=400, height=40,
+                        corner_radius=8)
         user_in.pack(pady=5)
 
         # ── On submit fonction ───────────────────────────────────────────────
@@ -264,6 +348,7 @@ def main_view():
                 msg.after(5000, msg.destroy)
                 
             remain_questions -= 1
+            progressbar.step()
             user_in.delete(0, END)
             if remain_questions > 0:
                 current_question = list_questions.pop()
@@ -292,6 +377,7 @@ def main_view():
         submit_res.pack(anchor="w")
         
     main_menu()
+    game_ui()
     app.mainloop()
 
 
