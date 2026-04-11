@@ -402,13 +402,13 @@ def main_view():
         bottom_frame.pack(pady=(10, 5))
         bottom_frame.pack_propagate(False)
 
-        response_lbl = ctk.CTkLabel(
-            bottom_frame,
-            text="Ta réponse :",
-            text_color=COLORS["text_muted"],
-            font=FONTS["placeholder"],
-        )
-        response_lbl.pack(pady=(5, 0), anchor="w")
+        # response_lbl = ctk.CTkLabel(
+        #     bottom_frame,
+        #     text="Ta réponse :",
+        #     text_color=COLORS["text_muted"],
+        #     font=FONTS["placeholder"],
+        # )
+        # response_lbl.pack(pady=(5, 0), anchor="w")
 
         user_input = ctk.CTkEntry(
             bottom_frame,
@@ -425,6 +425,10 @@ def main_view():
         )
         user_input.pack(pady=5)
 
+        # Validation de la réponse avec la touche Entrée
+        user_input.bind("<Return>", lambda event: on_submit(user_input.get()))
+
+
         # ── Logique de validation d'une réponse ───────────────────────────────
         def on_submit(player_answer):
             """Évalue la réponse du joueur, met à jour le score et passe à la question suivante.
@@ -439,32 +443,71 @@ def main_view():
             expected_answer = all_q[current_question]
 
             if player_answer.strip().lower() != expected_answer.lower():
-                # ── Mauvaise réponse ───────────────────────────────────────────
+                # ── Mauvaise réponse ──────────────────────────────────────────
                 user_score -= 1
-                feedback = ctk.CTkLabel(
+
+                # Changement visuel immédiat : bordure de la saisie en rouge
+                user_input.configure(border_color=COLORS["danger"])
+
+                feedback_frame = ctk.CTkFrame(
                     bottom_frame,
-                    text="❌ Aïe... Raté !",
-                    font=FONTS["button"],
                     fg_color=COLORS["danger_light"],
-                    width=100,
-                    height=20,
+                    border_color=COLORS["danger"],
+                    border_width=1,
+                    corner_radius=DIMENSIONS["border"],
+                    width=380,
+                    height=65,
                 )
-                feedback.pack(pady=20)
-                feedback.after(2000, feedback.destroy)
+                feedback_frame.pack(pady=8)
+                feedback_frame.pack_propagate(False)
+
+                ctk.CTkLabel(
+                    feedback_frame,
+                    text=f"❌  Raté !   💡 Réponse : {expected_answer}",
+                    font=FONTS["button"],
+                    text_color=COLORS["danger"],
+                ).pack(expand=True)
+
+                # Disparaît après 2.5s et remet la bordure normale
+                feedback_frame.after(2500, feedback_frame.destroy)
+                feedback_frame.after(2500, lambda: user_input.configure(
+                    border_color=COLORS["border"]
+                ))
+                user_input.after(2500, lambda: user_input.configure(border_color=COLORS["border"]))
+
 
             else:
-                # ── Bonne réponse ──────────────────────────────────────────────
+                # ── Bonne réponse ─────────────────────────────────────────────
                 user_score += 1
-                feedback = ctk.CTkLabel(
+
+                # Changement visuel immédiat : bordure de la saisie en vert
+                user_input.configure(border_color="#10b981")
+
+                feedback_frame = ctk.CTkFrame(
                     bottom_frame,
-                    text="✅ Bravo ! Bonne réponse ! Tu gagnes 1 point.",
-                    font=FONTS["button"],
                     fg_color=COLORS["success_hover"],
-                    width=100,
-                    height=20,
+                    border_color="#10b981",
+                    border_width=1,
+                    corner_radius=DIMENSIONS["border"],
+                    width=380,
+                    height=65,
                 )
-                feedback.pack(pady=20)
-                feedback.after(5000, feedback.destroy)
+                feedback_frame.pack(pady=8)
+                feedback_frame.pack_propagate(False)
+
+                ctk.CTkLabel(
+                    feedback_frame,
+                    text="✅  Bravo !  +1 point",
+                    font=FONTS["button"],
+                    text_color="#6ee7b7",
+                ).pack(expand=True)
+
+                feedback_frame.after(2500, feedback_frame.destroy)
+                feedback_frame.after(2500, lambda: user_input.configure(
+                    border_color=COLORS["border"]
+                ))
+                user_input.after(2500, lambda: user_input.configure(border_color=COLORS["border"]))
+
 
             # ── Mise à jour de l'interface après chaque réponse ───────────────
             remain_questions -= 1
@@ -514,7 +557,6 @@ def main_view():
 
     # ── Lancement de l'application ─────────────────────────────────────────────
     main_menu()
-    game_ui()
     app.mainloop()
 
 
