@@ -39,10 +39,9 @@ from db_connect import con, cur, cur2, con2
 user_score = 0                        # Score courant du joueur
 good_response = 0                     # Compteur de bonnes réponses
 false_response = 0                    # Compteur de mauvaises réponses
-dico_question = len(get_question())
-remain_questions = dico_question      # Nombre de questions restantes
-all_questions = dico_question         # Nombre total de questions (invariant)
-
+MAX_QUESTIONS = 10                    # Nombre de questions par partie
+remain_questions = MAX_QUESTIONS
+all_questions = MAX_QUESTIONS
 
 # ── Point d'entrée de l'interface ─────────────────────────────────────────────
 
@@ -241,13 +240,22 @@ def main_view():
         # Réinitialisation de la session à chaque nouvelle partie
         remain_questions = all_questions
         user_score = 0
-        good_response = 0
-        false_response = 0
 
         # ── Chargement et mélange des questions ───────────────────────────────
+        # Récupère le dictionnaire complet {question: réponse}
         question_items = get_question()
-        question_list = list(question_items.keys())
+
+        # Extrait uniquement les questions (clés du dico) sous forme de liste
+        question_keys = list(question_items.keys())
+
+        # Tire au hasard MAX_QUESTIONS questions sans répétition.
+        # min() garantit qu'on ne demande pas plus que ce qui existe dans le dico.
+        question_list = random.sample(question_keys, min(MAX_QUESTIONS, len(question_keys)))
+
+        # Mélange l'ordre des questions sélectionnées pour varier à chaque partie
         random.shuffle(question_list)
+
+        # Prend et retire la dernière question de la liste → 1ère question affichée
         current_question = question_list.pop()
 
         clear_screen()
@@ -290,7 +298,7 @@ def main_view():
             ),
             text_color=COLORS["danger"],
             font=("Roboto", 15),
-            fg_color=COLORS["surface"],
+            fg_color=COLORS["surface3"],
             corner_radius=DIMENSIONS["border"],
             border_width=1,
             border_color=COLORS["danger_hover"],
@@ -307,7 +315,7 @@ def main_view():
             text=f"Record à battre : {last_record} pts",
             text_color=COLORS["primary_hover"],
             font=("Roboto", 15),
-            fg_color=COLORS["surface"],
+            fg_color=COLORS["surface3"],
             corner_radius=DIMENSIONS["border"],
             border_width=1,
             border_color=COLORS["primary_hover"],
@@ -323,7 +331,7 @@ def main_view():
             text=f"Score : {user_score}",
             text_color=COLORS["success_hover"],
             font=("Roboto", 15),
-            fg_color=COLORS["surface"],
+            fg_color=COLORS["surface3"],
             corner_radius=DIMENSIONS["border"],
             border_width=1,
             border_color=COLORS["success_hover"],
@@ -463,7 +471,7 @@ def main_view():
 
                 ctk.CTkLabel(
                     feedback_frame,
-                    text=f"❌  Raté !   💡 Réponse : {expected_answer}",
+                    text=f"❌  Raté !   💡 la bonne réponse est : {expected_answer}",
                     font=FONTS["button"],
                     text_color=COLORS["danger"],
                 ).pack(expand=True)
@@ -482,6 +490,7 @@ def main_view():
 
                 # Changement visuel immédiat : bordure de la saisie en vert
                 user_input.configure(border_color="#10b981")
+                #score_badge.configure(fg_color="#cbfaeb")
 
                 feedback_frame = ctk.CTkFrame(
                     bottom_frame,
@@ -507,6 +516,7 @@ def main_view():
                     border_color=COLORS["border"]
                 ))
                 user_input.after(2500, lambda: user_input.configure(border_color=COLORS["border"]))
+                #score_badge.after(2500, lambda: score_badge.configure(fg_color=COLORS["surface3"]))
 
 
             # ── Mise à jour de l'interface après chaque réponse ───────────────
@@ -528,7 +538,7 @@ def main_view():
 
                 # Alerte visuelle quand il reste peu de questions
                 if remain_questions <= 3:
-                    questions_count_badge.configure(
+                    remaining_frame.configure(
                         fg_color=COLORS["danger_light"]
                     )
 
@@ -536,9 +546,9 @@ def main_view():
                 # ── Fin du quiz : enregistrement du record si battu ────────────
                 if user_score > last_record:
                     insert_record(user_score)
-                record_badge.configure(text=f"🏆 Record à battre : {user_score} pts")
                 # Retour au menu principal après un court délai
                 app.after(1500, main_menu)
+                record_badge.configure(text=f"🏆 Record à battre : {user_score} pts")
 
         submit_btn = ctk.CTkButton(
             bottom_frame,
