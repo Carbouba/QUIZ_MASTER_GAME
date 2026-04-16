@@ -17,6 +17,7 @@ from tkinter import END
 from PIL import Image
 import customtkinter as ctk
 import CTkMessagebox as ctkm
+from customtkinter.windows.widgets import image
 
 # Ajout des répertoires parents au chemin Python pour les imports relatifs
 sys.path.append("..")
@@ -62,6 +63,24 @@ def main_view():
     app.geometry("500x700")
     app.resizable(False, False)
     app.configure(fg_color=COLORS["bg"])
+
+    # # Charger l'image de fond
+    # bg_image = ctk.CTkImage(
+    #     Image.open(os.path.join(IMG_DIR, "background.png")),
+    #     size=(500, 700)
+    # )
+
+    # # Créer un label avec l'image
+    # bg_label = ctk.CTkLabel(
+    #     app,
+    #     image=bg_image,
+    #     text=""
+    # )
+    # bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    # bg_label.lower()
+
+    # # Mettre le label en arrière-plan (important!)
+    # bg_label.lower()
 
     # ── Bandeau titre ──────────────────────────────────────────────────────────
     title_frame = ctk.CTkFrame(
@@ -149,7 +168,7 @@ def main_view():
             top_panel,
             text=f"🏆 Record à battre : {last_record} pts",
             text_color=COLORS["white"],
-            font=("Roboto", 18),
+            font=("Orbitron", 16),
             fg_color=COLORS["surface"],
             border_width=1,
             border_color=COLORS["primary_dim"],
@@ -180,7 +199,7 @@ def main_view():
 
         start_btn = ctk.CTkButton(
             center_panel,
-            text=" Commencer",
+            text=" Commencer le quiz",
             text_color=COLORS["white"],
             font=FONTS["title"],
             image=ctk.CTkImage(Image.open(os.path.join(IMG_DIR, "play.png"))),
@@ -380,7 +399,7 @@ def main_view():
         # ── Carte de la question ───────────────────────────────────────────────
         question_frame = ctk.CTkFrame(
             main_frame,
-            fg_color=COLORS["surface3"],
+            fg_color=COLORS["surface"],
             width=400,
             height=150,
             corner_radius=DIMENSIONS["border"],
@@ -392,7 +411,7 @@ def main_view():
 
         question_lbl = ctk.CTkLabel(
             question_frame,
-            text=current_question,
+            text=f"{current_question} ❓",
             text_color=COLORS["text"],
             font=FONTS["question"],
 
@@ -450,6 +469,36 @@ def main_view():
             all_q = get_question()
             expected_answer = all_q[current_question]
 
+            # Vérification si la réponse est vide
+            if player_answer.strip() == "":
+                # Changement visuel immédiat : bordure de la saisie en rouge
+                user_input.configure(border_color=COLORS["danger"])
+
+                feedback_frame = ctk.CTkFrame(
+                    bottom_frame,
+                    fg_color=COLORS["danger_light"],
+                    border_color=COLORS["danger"],
+                    border_width=1,
+                    corner_radius=DIMENSIONS["border"],
+                    width=380,
+                    height=65,
+                )
+                feedback_frame.pack(pady=8)
+                feedback_frame.pack_propagate(False)
+
+                ctk.CTkLabel(
+                    feedback_frame,
+                    text="Veuillez entrer une réponse",
+                    text_color=COLORS["danger"],
+                    font=FONTS["placeholder"],
+                ).pack(expand=True)
+
+                # Disparaît après 2.5s et remet la bordure normale
+                feedback_frame.after(2000, feedback_frame.destroy)
+                user_input.after(2000, lambda: user_input.configure(border_color=COLORS["border"]))
+                return
+
+            # Vérification si la réponse est incorrecte
             if player_answer.strip().lower() != expected_answer.lower():
                 # ── Mauvaise réponse ──────────────────────────────────────────
                 user_score -= 1
@@ -471,7 +520,7 @@ def main_view():
 
                 ctk.CTkLabel(
                     feedback_frame,
-                    text=f"❌  Raté !   💡 la bonne réponse est : {expected_answer}",
+                    text=f"❌ Raté !   \n💡 la bonne réponse est : {expected_answer}",
                     font=FONTS["button"],
                     text_color=COLORS["danger"],
                 ).pack(expand=True)
@@ -484,6 +533,7 @@ def main_view():
                 user_input.after(2500, lambda: user_input.configure(border_color=COLORS["border"]))
 
 
+            # Vérification si la réponse est correcte
             else:
                 # ── Bonne réponse ─────────────────────────────────────────────
                 user_score += 1
