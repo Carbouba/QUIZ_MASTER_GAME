@@ -1,28 +1,30 @@
 """
-    Ce fichier ne dispose que d'une seul responsablité : connecté la base des données.
+Module de connexion aux bases de données SQLite du Quiz Master Game.
 
-    Un connecteur pour la BD db_record.db et un autre pour la db_questions.db.
+Responsabilité unique : établir les connexions aux deux bases de données :
+  - db_record.db  : stocke le record (meilleur score) du joueur.
+  - db_questions.db : stocke les questions et réponses (usage futur).
 
-    A chaque appele, le connecteur renvoi une connection a la BD le concernant.
-
-    Si le fichier BD n'existe pas, il le crée automatiquement.
+Les connexions et curseurs sont exportés pour être utilisés par db_call.py.
+Si le fichier de base de données n'existe pas, SQLite le crée automatiquement.
 """
 
-import sqlite3
 import os
+import sqlite3
 
-BASE_DIRE = os.path.dirname(os.path.abspath(__file__))
+# Répertoire absolu de ce fichier, utilisé pour construire les chemins des BD
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# ── Connexion à la base du record ─────────────────────────────────────────────
 try:
-    con = sqlite3.connect(os.path.join(BASE_DIRE, "db_record.db"))
+    con = sqlite3.connect(os.path.join(BASE_DIR, "db_record.db"))
     cur = con.cursor()
-except sqlite3.Error as er:
-    print(f"Erreur SQLite : {er}")
+except sqlite3.Error as error:
+    print(f"Erreur SQLite (db_record) : {error}")
 
+# ── Connexion à la base des questions ─────────────────────────────────────────
 try:
-    con2 = sqlite3.connect(os.path.join(BASE_DIRE, "db_questions.db"))
+    con2 = sqlite3.connect(os.path.join(BASE_DIR, "db_questions.db"))
     cur2 = con2.cursor()
-except sqlite3.Error as er2:
-    print(f"Erreur SQLite : {er2}")
-
-
+except sqlite3.Error as error2:
+    print(f"Erreur SQLite (db_questions) : {error2}")

@@ -137,7 +137,7 @@ def main_view():
         game_icon = ctk.CTkButton(
             top_panel,
             text="🎮",
-            font=FONTS["h1"],
+            font=FONTS["emoji"],
             fg_color=COLORS["primary_dim"],
             border_width=1,
             border_color=COLORS["border"],
@@ -590,6 +590,9 @@ def main_view():
                 if remain_questions <= 3:
                     remaining_frame.configure(
                         fg_color=COLORS["danger_light"]
+                    )
+                    progress_bar.configure(
+                        progress_color=COLORS["danger_hover"]
                     )
 
             else:
