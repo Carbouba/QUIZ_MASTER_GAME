@@ -45,7 +45,7 @@ Une application de quiz interactive avec une interface moderne et élégante, d�
    pip install -r requirements.txt
    ```
    
-4. S'il vous manque vraiment tkinter sur votre système Linux
+4. S'il vous manque vraiment tkinter sur votre système Linux (Vous pouvez l'installer avec cette commande)
    ```bash
    sudo apt install python3-tk
    ```
