@@ -447,7 +447,7 @@ def main_view():
             width=400,
             height=55,
             corner_radius=DIMENSIONS["border"],
-            placeholder_text="Écris ta réponse ici...",
+            placeholder_text="Saisis ta réponse ici...",
             placeholder_text_color=COLORS["text_muted"],
         )
         user_input.pack(pady=5)
