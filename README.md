@@ -34,10 +34,11 @@ Une application de quiz interactive avec une interface moderne et élégante, d�
 
 2. **Créer un environnement virtuel (recommandé)**
    ```bash
+   # Création de l'environnement virtuel
    python -m venv .venv
-   source .venv/bin/activate  # Linux/Mac
-   # ou
-   .venv\Scripts\activate  # Windows
+   # Activation de l'environnement virtuel
+   source .venv/bin/activate          # Linux/Mac
+   .venv\Scripts\activate           # Windows
    ```
 
 3. **Installer les dépendances**
